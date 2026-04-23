@@ -1,8 +1,7 @@
-function enviarFormulario() {
+async function enviarFormulario() {
 
     let erros = [];
 
-   
     document.getElementById("erros").style.display = "none";
     document.getElementById("resultado").style.display = "none";
 
@@ -17,77 +16,69 @@ function enviarFormulario() {
     let regexCEP = /^\d{5}-\d{3}$/;
     let regexEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-    if (nome.split(" ").length < 2) {
-        erros.push("Digite nome e sobrenome");
-    }
+    if (nome.split(" ").length < 2) erros.push("Digite nome e sobrenome");
+    if (!regexTel.test(telefone)) erros.push("Telefone inválido");
+    if (!regexCEP.test(cep)) erros.push("CEP inválido");
+    if (!regexEmail.test(email)) erros.push("E-mail inválido");
+    if (senha.length < 6) erros.push("Senha deve ter no mínimo 6 caracteres");
+    if (senha !== confirmarSenha) erros.push("Senhas não coincidem");
 
-    if (!regexTel.test(telefone)) {
-        erros.push("Telefone inválido (use 00 00000-0000)");
-    }
-
-    if (!regexCEP.test(cep)) {
-        erros.push("CEP inválido (use 00000-000)");
-    }
-
-    if (!regexEmail.test(email)) {
-        erros.push("E-mail inválido");
-    }
-
-    if (senha.length < 6) {
-        erros.push("Senha deve ter no mínimo 6 caracteres");
-    }
-
-    if (senha !== confirmarSenha) {
-        erros.push("Senhas não coincidem");
-    }
-
-   
     if (erros.length > 0) {
         document.getElementById("erros").innerHTML = erros.join("<br>");
         document.getElementById("erros").style.display = "block";
-        document.getElementById("resultado").style.display = "none";
         return false;
     }
 
-    document.getElementById("erros").style.display = "none";
+    const botao = document.querySelector('input[type="submit"]');
+    const sucessoDiv = document.getElementById("resultado");
+    const erroDiv = document.getElementById("erros");
 
+    try {
+        botao.disabled = true;
+        botao.value = "Enviando...";
 
-    fetch("https://backend-node-nmze.onrender.com/register", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            name: nome,
-            email: email,
-            phone: telefone
-        })
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error();
-        }
-        return response.json();
-    })
-    .then(data => {
+        const resultado = await fetchWithRetry(
+            "https://backend-node-nmze.onrender.com/register",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    name: nome,
+                    email: email,
+                    phone: telefone.replace(/\D/g, "")
+                })
+            },
+            3
+        );
 
-        let gift = data.gift || "desconhecido";
+        sucessoDiv.innerHTML = `Parabéns ${nome}, você realizou seu cadastro com o email ${email}. Entraremos em contato através do seu telefone ${telefone}. Você ganhou este prêmio ${resultado.gift}.`;
+        sucessoDiv.style.display = "block";
 
-        document.getElementById("resultado").innerHTML =
-            `Parabéns ${nome}, você realizou seu cadastro com o e-mail ${email}.<br>
-            Entraremos em contato através do seu telefone ${telefone}.<br>
-            Você ganhou um prêmio: ${gift}`;
-
-        document.getElementById("resultado").style.display = "block";
-        document.getElementById("erros").style.display = "none";
-    })
-    .catch(() => {
-        document.getElementById("resultado").innerHTML =
-            "Servidor indisponível. Tente novamente mais tarde.";
-
-        document.getElementById("resultado").style.display = "block";
-        document.getElementById("erros").style.display = "none";
-    });
+    } catch (erro) {
+        erroDiv.innerHTML = erro.message || "Não foi possível concluir o cadastro.";
+        erroDiv.style.display = "block";
+    } finally {
+        botao.disabled = false;
+        botao.value = "Enviar";
+    }
 
     return false;
+}
+async function fetchWithRetry(url, options, tentativas) {
+    for (let i = 0; i < tentativas; i++) {
+        try {
+            const response = await fetch(url, options);
+
+            if (!response.ok) {
+                throw new Error("Erro no servidor");
+            }
+
+            return await response.json();
+
+        } catch (erro) {
+            if (i === tentativas - 1) throw erro;
+        }
+    }
 }
