@@ -1,6 +1,6 @@
 const form = document.getElementById("formCadastro");
-const errosDiv = document.getElementById("erros");
-const resultadoDiv = document.getElementById("resultado");
+const erroDiv = document.getElementById("erros");
+const sucessoDiv = document.getElementById("resultado");
 const botao = document.querySelector('#formCadastro input[type="submit"]');
 
 form.addEventListener("submit", enviarFormulario);
@@ -8,27 +8,30 @@ form.addEventListener("submit", enviarFormulario);
 async function enviarFormulario(event) {
     event.preventDefault();
 
+    erroDiv.style.display = "none";
+    sucessoDiv.style.display = "none";
+    erroDiv.innerHTML = "";
+    sucessoDiv.innerHTML = "";
+
     let erros = [];
 
-    esconderMensagens();
+    const nome = document.getElementById("nome").value.trim();
+    const telefone = document.getElementById("telefone").value.trim();
+    const cep = document.getElementById("CEP").value.trim();
+    const email = document.getElementById("mail").value.trim();
+    const senha = document.getElementById("senha").value;
+    const confirmarSenha = document.getElementById("confirmarSenha").value;
 
-    let nome = document.getElementById("nome").value.trim();
-    let telefone = document.getElementById("telefone").value.trim();
-    let cep = document.getElementById("CEP").value.trim();
-    let email = document.getElementById("mail").value.trim();
-    let senha = document.getElementById("senha").value;
-    let confirmarSenha = document.getElementById("confirmarSenha").value;
-
-    let telefoneNumeros = telefone.replace(/\D/g, "");
-    let regexCEP = /^\d{5}-\d{3}$/;
-    let regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phone = telefone.replace(/\D/g, "");
+    const regexCEP = /^\d{5}-\d{3}$/;
+    const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (nome.split(/\s+/).length < 2) {
         erros.push("Digite nome e sobrenome.");
     }
 
-    if (telefoneNumeros.length !== 10 && telefoneNumeros.length !== 11) {
-        erros.push("Telefone inválido. Digite com DDD e 10 ou 11 números.");
+    if (phone.length !== 10 && phone.length !== 11) {
+        erros.push("Telefone inválido. Digite com DDD.");
     }
 
     if (!regexCEP.test(cep)) {
@@ -48,87 +51,89 @@ async function enviarFormulario(event) {
     }
 
     if (erros.length > 0) {
-        mostrarErro(erros.join("<br>"));
+        erroDiv.innerHTML = erros.join("<br>");
+        erroDiv.style.display = "block";
         return;
     }
+
+    const dados = {
+        name: nome,
+        email: email,
+        phone: phone
+    };
 
     try {
         botao.disabled = true;
         botao.value = "Enviando...";
 
-        const response = await fetch("https://backend-node-nmze.onrender.com/register", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
+        const resultado = await fetchWithRetry(
+            "https://backend-node-nmze.onrender.com/register",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(dados)
             },
-            body: JSON.stringify({
-                name: nome,
-                email: email,
-                phone: telefoneNumeros
-            })
-        });
-
-        const texto = await response.text();
-        console.log("Status:", response.status);
-        console.log("Texto bruto da resposta:", texto);
-
-        let dados = {};
-        try {
-            dados = JSON.parse(texto);
-        } catch {
-            dados = { raw: texto };
-        }
-
-        console.log("JSON convertido:", dados);
-
-        if (!response.ok) {
-            throw new Error(
-                dados.message ||
-                dados.error ||
-                "Erro ao enviar cadastro."
-            );
-        }
-
-        const gift =
-            dados.gift ||
-            dados.data?.gift ||
-            dados.prize ||
-            dados.data?.prize ||
-            dados.brinde ||
-            "prêmio não informado";
-
-        mostrarSucesso(
-            `Parabéns ${nome}, você realizou seu cadastro com o email ${email}, entraremos em contato através do seu telefone ${telefone}, você ganhou este prêmio ${gift}.`
+            3
         );
 
+        console.log("Resposta da API:", resultado);
+
+        const gift =
+            resultado.gift ||
+            resultado.data?.gift ||
+            resultado.prize ||
+            resultado.data?.prize ||
+            "prêmio não informado";
+
+        sucessoDiv.innerHTML = `Parabéns ${nome}, você realizou seu cadastro com o email ${email}. Entraremos em contato através do seu telefone ${phone}. Você ganhou este prêmio ${gift}.`;
+        sucessoDiv.style.display = "block";
+
+        form.reset();
+
     } catch (erro) {
-        console.error("Erro completo:", erro);
-        mostrarErro(erro.message || "Não foi possível concluir o cadastro.");
+        console.error("Erro:", erro);
+        erroDiv.innerHTML = erro.message || "Não foi possível concluir o cadastro.";
+        erroDiv.style.display = "block";
     } finally {
         botao.disabled = false;
-        botao.value = "Enviar";
+        botao.value = "Cadastrar";
     }
 }
 
-function esconderMensagens() {
-    errosDiv.innerHTML = "";
-    resultadoDiv.innerHTML = "";
-    errosDiv.style.display = "none";
-    resultadoDiv.style.display = "none";
-}
+async function fetchWithRetry(url, options, tentativas) {
+    let ultimoErro;
 
-function mostrarErro(mensagem) {
-    resultadoDiv.style.display = "none";
-    resultadoDiv.innerHTML = "";
+    for (let i = 0; i < tentativas; i++) {
+        try {
+            const response = await fetch(url, options);
+            const texto = await response.text();
 
-    errosDiv.innerHTML = mensagem;
-    errosDiv.style.display = "block";
-}
+            let dados;
+            try {
+                dados = JSON.parse(texto);
+            } catch {
+                dados = { raw: texto };
+            }
 
-function mostrarSucesso(mensagem) {
-    errosDiv.style.display = "none";
-    errosDiv.innerHTML = "";
+            console.log("Status:", response.status);
+            console.log("Body:", dados);
 
-    resultadoDiv.innerHTML = mensagem;
-    resultadoDiv.style.display = "block";
+            if (!response.ok) {
+                throw new Error(
+                    dados.message ||
+                    dados.error ||
+                    dados.raw ||
+                    `Erro ${response.status}`
+                );
+            }
+
+            return dados;
+        } catch (erro) {
+            ultimoErro = erro;
+        }
+    }
+
+    throw ultimoErro;
 }
