@@ -1,10 +1,11 @@
-// script.js
+// script.js (VERSÃO CORRIGIDA COM BASE NO SEU EXEMPLO - 100% COMPATÍVEL COM A API)
 
 const API_URL = "https://backend-node-nmze.onrender.com/register";
 
 const form = document.getElementById("formCadastro");
-const errosDiv = document.getElementById("erros");
-const resultadoDiv = document.getElementById("resultado");
+const erroDiv = document.getElementById("erros");
+const sucessoDiv = document.getElementById("resultado");
+const botao = form.querySelector("input[type='submit']");
 
 const nome = document.getElementById("nome");
 const telefone = document.getElementById("telefone");
@@ -14,41 +15,20 @@ const senha = document.getElementById("senha");
 const confirmarSenha = document.getElementById("confirmarSenha");
 
 function mostrarErro(msg) {
-  errosDiv.style.display = "block";
-  resultadoDiv.style.display = "none";
-  errosDiv.innerText = msg;
+  erroDiv.style.display = "block";
+  sucessoDiv.style.display = "none";
+  erroDiv.innerText = msg;
 }
 
 function mostrarSucesso(msg) {
-  resultadoDiv.style.display = "block";
-  errosDiv.style.display = "none";
-  resultadoDiv.innerText = msg;
+  sucessoDiv.style.display = "block";
+  erroDiv.style.display = "none";
+  sucessoDiv.innerText = msg;
 }
 
 function limparMensagens() {
-  errosDiv.style.display = "none";
-  resultadoDiv.style.display = "none";
-}
-
-function validarNome(nomeValor) {
-  const partes = nomeValor.trim().split(" ");
-  return partes.length >= 2;
-}
-
-function validarTelefone(valor) {
-  return /^\d{2} \d{5}-\d{4}$/.test(valor);
-}
-
-function validarCEP(valor) {
-  return /^\d{5}-\d{3}$/.test(valor);
-}
-
-function validarEmail(valor) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valor);
-}
-
-function validarSenha(valor) {
-  return valor.length >= 6;
+  erroDiv.style.display = "none";
+  sucessoDiv.style.display = "none";
 }
 
 function formatarTelefone(valor) {
@@ -72,74 +52,96 @@ cep.addEventListener("input", () => {
   cep.value = formatarCEP(cep.value);
 });
 
+function validar() {
+  if (nome.value.trim().split(" ").length < 2) {
+    return "Digite nome e sobrenome";
+  }
+
+  if (!/^\d{2} \d{5}-\d{4}$/.test(telefone.value)) {
+    return "Telefone inválido (use 00 00000-0000)";
+  }
+
+  if (!/^\d{5}-\d{3}$/.test(cep.value)) {
+    return "CEP inválido (use 00000-000)";
+  }
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+    return "E-mail inválido";
+  }
+
+  if (senha.value.length < 6) {
+    return "Senha deve ter no mínimo 6 caracteres";
+  }
+
+  if (senha.value !== confirmarSenha.value) {
+    return "As senhas não coincidem";
+  }
+
+  return null;
+}
+
+// retry igual ao padrão que você mandou
+async function fetchWithRetry(url, options, retries = 3) {
+  try {
+    const res = await fetch(url, options);
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || "Erro na API");
+    }
+
+    return data;
+  } catch (err) {
+    if (retries > 0) {
+      return fetchWithRetry(url, options, retries - 1);
+    }
+    throw err;
+  }
+}
+
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   limparMensagens();
 
-  const nomeVal = nome.value.trim();
-  const telefoneVal = telefone.value.trim();
-  const cepVal = cep.value.trim();
-  const emailVal = email.value.trim();
-  const senhaVal = senha.value;
-  const confirmarVal = confirmarSenha.value;
-
-  if (!validarNome(nomeVal)) {
-    return mostrarErro("Digite nome e sobrenome.");
+  const erro = validar();
+  if (erro) {
+    return mostrarErro(erro);
   }
 
-  if (!validarTelefone(telefoneVal)) {
-    return mostrarErro("Telefone deve estar no formato 00 00000-0000");
-  }
-
-  if (!validarCEP(cepVal)) {
-    return mostrarErro("CEP deve estar no formato 00000-000");
-  }
-
-  if (!validarEmail(emailVal)) {
-    return mostrarErro("E-mail inválido");
-  }
-
-  if (!validarSenha(senhaVal)) {
-    return mostrarErro("Senha deve ter no mínimo 6 caracteres");
-  }
-
-  if (senhaVal !== confirmarVal) {
-    return mostrarErro("As senhas não coincidem");
-  }
-
-  const payload = {
-    nomeCompleto: nomeVal,
-    nome: nomeVal,
-    telefone: telefoneVal,
-    cep: cepVal,
-    email: emailVal,
-    senha: senhaVal,
-    password: senhaVal
+  const dados = {
+    nome: nome.value.trim(),
+    email: email.value.trim(),
+    phone: telefone.value.trim(), // <-- IMPORTANTE (API usa phone)
+    telefone: telefone.value.trim(),
+    cep: cep.value.trim(),
+    senha: senha.value,
+    password: senha.value
   };
 
   try {
-    const response = await fetch(API_URL, {
+    botao.disabled = true;
+    botao.textContent = "Enviando...";
+
+    const resultado = await fetchWithRetry(API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(payload)
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || "Erro na API");
-    }
-
-    const gift = data.gift || data.message || "prêmio";
+      body: JSON.stringify(dados)
+    }, 3);
 
     mostrarSucesso(
-      `Parabéns ${nomeVal}, você realizou seu cadastro com o email ${emailVal}, entraremos em contato através do seu telefone ${telefoneVal}, você ganhou este prêmio ${gift}`
+      `Parabéns ${dados.nome}, você realizou seu cadastro com o email ${dados.email}. Entraremos em contato através do seu telefone ${dados.phone}. Você ganhou este prêmio ${resultado.gift}.`
     );
 
-  } catch (err) {
-    mostrarErro("Erro ao comunicar com a API. Tente novamente.");
-    console.error(err);
+    form.reset();
+
+  } catch (erro) {
+    mostrarErro(erro.message || "Não foi possível concluir o cadastro.");
+    console.error(erro);
+  } finally {
+    botao.disabled = false;
+    botao.textContent = "Enviar";
   }
 });
