@@ -1,16 +1,16 @@
+const form = document.getElementById("formCadastro");
+const errosDiv = document.getElementById("erros");
+const resultadoDiv = document.getElementById("resultado");
+const botao = document.querySelector('#formCadastro input[type="submit"]');
+
+form.addEventListener("submit", enviarFormulario);
+
 async function enviarFormulario(event) {
     event.preventDefault();
 
     let erros = [];
 
-    const errosDiv = document.getElementById("erros");
-    const resultadoDiv = document.getElementById("resultado");
-    const botao = document.querySelector('input[type="submit"]');
-
-    errosDiv.style.display = "none";
-    resultadoDiv.style.display = "none";
-    errosDiv.innerHTML = "";
-    resultadoDiv.innerHTML = "";
+    esconderMensagens();
 
     let nome = document.getElementById("nome").value.trim();
     let telefone = document.getElementById("telefone").value.trim();
@@ -48,8 +48,7 @@ async function enviarFormulario(event) {
     }
 
     if (erros.length > 0) {
-        errosDiv.innerHTML = erros.join("<br>");
-        errosDiv.style.display = "block";
+        mostrarErro(erros.join("<br>"));
         return;
     }
 
@@ -69,13 +68,25 @@ async function enviarFormulario(event) {
             })
         });
 
-        console.log("Status da resposta:", response.status);
+        const texto = await response.text();
+        console.log("Status:", response.status);
+        console.log("Texto bruto da resposta:", texto);
 
-        const dados = await response.json();
-        console.log("Resposta completa da API:", dados);
+        let dados = {};
+        try {
+            dados = JSON.parse(texto);
+        } catch {
+            dados = { raw: texto };
+        }
+
+        console.log("JSON convertido:", dados);
 
         if (!response.ok) {
-            throw new Error(dados.message || dados.error || "Erro ao enviar cadastro.");
+            throw new Error(
+                dados.message ||
+                dados.error ||
+                "Erro ao enviar cadastro."
+            );
         }
 
         const gift =
@@ -83,17 +94,41 @@ async function enviarFormulario(event) {
             dados.data?.gift ||
             dados.prize ||
             dados.data?.prize ||
+            dados.brinde ||
             "prêmio não informado";
 
-        resultadoDiv.innerHTML = `Parabéns ${nome}, você realizou seu cadastro com o email ${email}, entraremos em contato através do seu telefone ${telefone}, você ganhou este prêmio ${gift}.`;
-        resultadoDiv.style.display = "block";
+        mostrarSucesso(
+            `Parabéns ${nome}, você realizou seu cadastro com o email ${email}, entraremos em contato através do seu telefone ${telefone}, você ganhou este prêmio ${gift}.`
+        );
 
     } catch (erro) {
-        console.error("Erro:", erro);
-        errosDiv.innerHTML = erro.message || "Não foi possível concluir o cadastro.";
-        errosDiv.style.display = "block";
+        console.error("Erro completo:", erro);
+        mostrarErro(erro.message || "Não foi possível concluir o cadastro.");
     } finally {
         botao.disabled = false;
         botao.value = "Enviar";
     }
+}
+
+function esconderMensagens() {
+    errosDiv.innerHTML = "";
+    resultadoDiv.innerHTML = "";
+    errosDiv.style.display = "none";
+    resultadoDiv.style.display = "none";
+}
+
+function mostrarErro(mensagem) {
+    resultadoDiv.style.display = "none";
+    resultadoDiv.innerHTML = "";
+
+    errosDiv.innerHTML = mensagem;
+    errosDiv.style.display = "block";
+}
+
+function mostrarSucesso(mensagem) {
+    errosDiv.style.display = "none";
+    errosDiv.innerHTML = "";
+
+    resultadoDiv.innerHTML = mensagem;
+    resultadoDiv.style.display = "block";
 }
