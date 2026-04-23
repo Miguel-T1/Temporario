@@ -243,18 +243,17 @@ li a:hover {
     padding-left: 5px;
 }
 .mensagem {
-    display: none;
-    margin: 10px 20px;
+    margin-top: 15px;
     padding: 10px;
-    border-radius: 5px;
+    border-radius: 6px;
 }
 
 .erro {
-    background-color: #ffe5e5;
-    color: #cc0000;
+    background-color: #ffdada;
+    color: #a00000;
 }
 
 .sucesso {
-    background-color: #e6ffe6;
-    color: #006600;
+    background-color: #d8ffd8;
+    color: #006400;
 }
