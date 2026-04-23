@@ -24,43 +24,41 @@
       <h1 class = textomenor>
         Inscreva-se neste site:
     </h1>
-	<form class="formulario" onsubmit="enviarFormulario(event)">
-<div id="erros" class="mensagem erro" style="display:none;"></div>
-<div id="resultado" class="mensagem sucesso" style="display:none;"></div>
-
-
-		<div class="campo">
-		<label>Nome e Sobrenome:</label>	
-		<input type="text" name="Name" id="nome">
-	</div>
-
-	<div class="campo">
-		<label>Telefone:</label>
-		<input type="tel" id="telefone" name="LastName">
-	</div>
-
-	<div class="campo">
-		<label>CEP:</label>
-		<input type="text" name="cep" id="CEP">
-	</div>
-
-	<div class="campo">
-		<label>E-mail:</label>
-		<input type="email" name="Password" id = "mail">
-	</div>
+<form class="formulario" id="formCadastro">
+    <div id="erros" class="mensagem erro" style="display: none;"></div>
+    <div id="resultado" class="mensagem sucesso" style="display: none;"></div>
 
     <div class="campo">
-		<label>Senha:</label>
-		<input type="password" name="Password" id="senha">
-	</div>
+        <label>Nome e Sobrenome:</label>
+        <input type="text" id="nome">
+    </div>
 
     <div class="campo">
-		<label>Confirmar senha:</label>
-		<input type="password" name="Password" id="confirmarSenha">
-	</div>
+        <label>Telefone:</label>
+        <input type="tel" id="telefone">
+    </div>
 
-<input type="submit" value="Enviar">
+    <div class="campo">
+        <label>CEP:</label>
+        <input type="text" id="CEP">
+    </div>
 
+    <div class="campo">
+        <label>E-mail:</label>
+        <input type="email" id="mail">
+    </div>
+
+    <div class="campo">
+        <label>Senha:</label>
+        <input type="password" id="senha">
+    </div>
+
+    <div class="campo">
+        <label>Confirmar senha:</label>
+        <input type="password" id="confirmarSenha">
+    </div>
+
+    <input type="submit" value="Enviar">
 </form>
 <script src="script.js"></script>
 
