@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Site Uhul</title>
+   <link rel="stylesheet" href="style.css">
+ 
+
+</head>
+<body>
+    <header>
+        <h1>Sobre mim</h1>
+    </header>
+	
+		<nav>
+	<ul>
+	  <a href="index.html">Página inicial</a>
+      <a href="sobre.html">Sobre</a>
+	<a href="contatos.html">Contatos</a>
+	<a href="links.html">Links</a>
+    <a href = "cadastro.html"> Cadastro</a>
+	</ul>
+	</nav>
+      <h1 class = textomenor>
+        Inscreva-se neste site:
+    </h1>
+	<form class="formulario" onsubmit="return enviarFormulario()">
+<div id="erros" class="mensagem erro"></div>
+    <div id="resultado" class="mensagem sucesso"></div>
+
+
+		<div class="campo">
+		<label>Nome e Sobrenome:</label>	
+		<input type="text" name="Name" id="nome">
+	</div>
+
+	<div class="campo">
+		<label>Telefone:</label>
+		<input type="tel" id="telefone" name="LastName">
+	</div>
+
+	<div class="campo">
+		<label>CEP:</label>
+		<input type="text" name="cep" id="CEP">
+	</div>
+
+	<div class="campo">
+		<label>E-mail:</label>
+		<input type="email" name="Password" id = "mail">
+	</div>
+
+    <div class="campo">
+		<label>Senha:</label>
+		<input type="password" name="Password" id="senha">
+	</div>
+
+    <div class="campo">
+		<label>Confirmar senha:</label>
+		<input type="password" name="Password" id="confirmarSenha">
+	</div>
+
+<input type="submit" value="Enviar">
+
+</form>
+<script src="script.js"></script>
+
+
+
+    </body>
+
+
+</html>
