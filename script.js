@@ -22,33 +22,33 @@ async function enviarFormulario(event) {
     const senha = document.getElementById("senha").value;
     const confirmarSenha = document.getElementById("confirmarSenha").value;
 
-    const phone = telefone.replace(/\D/g, "");
-    const regexCEP = /^\d{5}-\d{3}$/;
-    const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+   let regexTel = /^\(\d{2}\)\s\d{5}-\d{4}$/;
+let regexCEP = /^\d{5}-\d{3}$/;
+let regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (nome.split(/\s+/).length < 2) {
-        erros.push("Digite nome e sobrenome.");
-    }
+if (nome.split(/\s+/).length < 2) {
+    erros.push("Digite nome e sobrenome.");
+}
 
-    if (phone.length !== 10 && phone.length !== 11) {
-        erros.push("Telefone inválido. Digite com DDD.");
-    }
+if (!regexTel.test(telefone)) {
+    erros.push("Telefone inválido. Use (00) 00000-0000.");
+}
 
-    if (!regexCEP.test(cep)) {
-        erros.push("CEP inválido. Use 00000-000.");
-    }
+if (!regexCEP.test(cep)) {
+    erros.push("CEP inválido. Use 00000-000.");
+}
 
-    if (!regexEmail.test(email)) {
-        erros.push("E-mail inválido.");
-    }
+if (!regexEmail.test(email)) {
+    erros.push("E-mail inválido.");
+}
 
-    if (senha.length < 6) {
-        erros.push("A senha deve ter no mínimo 6 caracteres.");
-    }
+if (senha.length < 6) {
+    erros.push("A senha deve ter no mínimo 6 caracteres.");
+}
 
-    if (senha !== confirmarSenha) {
-        erros.push("As senhas não coincidem.");
-    }
+if (senha !== confirmarSenha) {
+    erros.push("As senhas não coincidem.");
+}
 
     if (erros.length > 0) {
         erroDiv.innerHTML = erros.join("<br>");
