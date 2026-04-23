@@ -24,16 +24,15 @@ async function enviarFormulario(event) {
 
     const phone = telefone.replace(/\D/g, "");
 
-    let regexTel = /^\(\d{2}\)\s\d{5}-\d{4}$/;
-    let regexCEP = /^\d{5}-\d{3}$/;
-    let regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const regexCEP = /^\d{5}-\d{3}$/;
+    const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (nome.split(/\s+/).length < 2) {
         erros.push("Digite nome e sobrenome.");
     }
 
-    if (!regexTel.test(telefone)) {
-        erros.push("Telefone inválido. Use (00) 00000-0000.");
+    if (phone.length !== 10 && phone.length !== 11) {
+        erros.push("Telefone inválido.");
     }
 
     if (!regexCEP.test(cep)) {
@@ -69,19 +68,36 @@ async function enviarFormulario(event) {
         botao.disabled = true;
         botao.value = "Enviando...";
 
-        const resultado = await fetchWithRetry(
-            "https://backend-node-nmze.onrender.com/register",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(dados)
+        const response = await fetch("https://backend-node-nmze.onrender.com/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
             },
-            3
-        );
+            body: JSON.stringify(dados)
+        });
 
-        console.log("Resposta da API:", resultado);
+        const texto = await response.text();
+        console.log("Status:", response.status);
+        console.log("Resposta bruta:", texto);
+        console.log("Dados enviados:", dados);
+
+        let resultado;
+        try {
+            resultado = JSON.parse(texto);
+        } catch {
+            resultado = { raw: texto };
+        }
+
+        console.log("Resposta convertida:", resultado);
+
+        if (!response.ok) {
+            throw new Error(
+                resultado.message ||
+                resultado.error ||
+                resultado.raw ||
+                `Erro ${response.status}`
+            );
+        }
 
         const gift =
             resultado.gift ||
@@ -92,13 +108,13 @@ async function enviarFormulario(event) {
             resultado.data?.brinde ||
             "prêmio não informado";
 
-        sucessoDiv.innerHTML = `Parabéns ${nome}, você realizou seu cadastro com o email ${email}. Entraremos em contato através do seu telefone ${telefone}. Você ganhou este prêmio ${gift}.`;
+        sucessoDiv.innerHTML = `Parabéns ${nome}, você realizou seu cadastro com o email ${email}. Entraremos em contato através do seu telefone ${formatarTelefone(phone)}. Você ganhou este prêmio ${gift}.`;
         sucessoDiv.style.display = "block";
 
         form.reset();
 
     } catch (erro) {
-        console.error("Erro:", erro);
+        console.error("Erro completo:", erro);
         erroDiv.innerHTML = erro.message || "Não foi possível concluir o cadastro.";
         erroDiv.style.display = "block";
     } finally {
@@ -107,38 +123,12 @@ async function enviarFormulario(event) {
     }
 }
 
-async function fetchWithRetry(url, options, tentativas) {
-    let ultimoErro;
-
-    for (let i = 0; i < tentativas; i++) {
-        try {
-            const response = await fetch(url, options);
-            const texto = await response.text();
-
-            let dados;
-            try {
-                dados = JSON.parse(texto);
-            } catch {
-                dados = { raw: texto };
-            }
-
-            console.log("Status:", response.status);
-            console.log("Body:", dados);
-
-            if (!response.ok) {
-                throw new Error(
-                    dados.message ||
-                    dados.error ||
-                    dados.raw ||
-                    `Erro ${response.status}`
-                );
-            }
-
-            return dados;
-        } catch (erro) {
-            ultimoErro = erro;
-        }
+function formatarTelefone(num) {
+    if (num.length === 11) {
+        return `(${num.slice(0, 2)}) ${num.slice(2, 7)}-${num.slice(7)}`;
     }
-
-    throw ultimoErro;
+    if (num.length === 10) {
+        return `(${num.slice(0, 2)}) ${num.slice(2, 6)}-${num.slice(6)}`;
+    }
+    return num;
 }
