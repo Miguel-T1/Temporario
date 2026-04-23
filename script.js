@@ -109,15 +109,13 @@ form.addEventListener("submit", async (e) => {
     return mostrarErro(erro);
   }
 
-  const dados = {
-    nome: nome.value.trim(),
-    email: email.value.trim(),
-    phone: telefone.value.trim(), // <-- IMPORTANTE (API usa phone)
-    telefone: telefone.value.trim(),
-    cep: cep.value.trim(),
-    senha: senha.value,
-    password: senha.value
-  };
+const dados = {
+  nomeCompleto: nome.value.trim(),
+  email: email.value.trim(),
+  phone: telefone.value.trim(),
+  cep: cep.value.trim(),
+  password: senha.value
+};
 
   try {
     botao.disabled = true;
