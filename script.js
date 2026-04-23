@@ -1,4 +1,6 @@
-async function enviarFormulario() {
+async function enviarFormulario(event) {
+    event.preventDefault();
+
     let erros = [];
 
     const errosDiv = document.getElementById("erros");
@@ -17,7 +19,7 @@ async function enviarFormulario() {
     let senha = document.getElementById("senha").value;
     let confirmarSenha = document.getElementById("confirmarSenha").value;
 
-let telefoneNumeros = telefone.replace(/\D/g, "");
+    let telefoneNumeros = telefone.replace(/\D/g, "");
     let regexCEP = /^\d{5}-\d{3}$/;
     let regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -25,9 +27,9 @@ let telefoneNumeros = telefone.replace(/\D/g, "");
         erros.push("Digite nome e sobrenome.");
     }
 
-if (telefoneNumeros.length < 10 || telefoneNumeros.length > 11) {
-    erros.push("Telefone inválido. Digite com DDD (10 ou 11 números).");
-}
+    if (telefoneNumeros.length !== 10 && telefoneNumeros.length !== 11) {
+        erros.push("Telefone inválido. Digite com DDD e 10 ou 11 números.");
+    }
 
     if (!regexCEP.test(cep)) {
         erros.push("CEP inválido. Use 00000-000.");
@@ -48,7 +50,7 @@ if (telefoneNumeros.length < 10 || telefoneNumeros.length > 11) {
     if (erros.length > 0) {
         errosDiv.innerHTML = erros.join("<br>");
         errosDiv.style.display = "block";
-        return false;
+        return;
     }
 
     try {
@@ -63,7 +65,7 @@ if (telefoneNumeros.length < 10 || telefoneNumeros.length > 11) {
             body: JSON.stringify({
                 name: nome,
                 email: email,
-                phone: telefone
+                phone: telefoneNumeros
             })
         });
 
@@ -76,19 +78,22 @@ if (telefoneNumeros.length < 10 || telefoneNumeros.length > 11) {
             throw new Error(dados.message || dados.error || "Erro ao enviar cadastro.");
         }
 
-        const gift = dados.gift || "prêmio não informado";
+        const gift =
+            dados.gift ||
+            dados.data?.gift ||
+            dados.prize ||
+            dados.data?.prize ||
+            "prêmio não informado";
 
         resultadoDiv.innerHTML = `Parabéns ${nome}, você realizou seu cadastro com o email ${email}, entraremos em contato através do seu telefone ${telefone}, você ganhou este prêmio ${gift}.`;
         resultadoDiv.style.display = "block";
 
     } catch (erro) {
         console.error("Erro:", erro);
-        errosDiv.innerHTML = "Não foi possível concluir o cadastro. Verifique o console.";
+        errosDiv.innerHTML = erro.message || "Não foi possível concluir o cadastro.";
         errosDiv.style.display = "block";
     } finally {
         botao.disabled = false;
         botao.value = "Enviar";
     }
-
-    return false;
 }
