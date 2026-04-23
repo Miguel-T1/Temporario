@@ -22,33 +22,35 @@ async function enviarFormulario(event) {
     const senha = document.getElementById("senha").value;
     const confirmarSenha = document.getElementById("confirmarSenha").value;
 
-   let regexTel = /^\(\d{2}\)\s\d{5}-\d{4}$/;
-let regexCEP = /^\d{5}-\d{3}$/;
-let regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phone = telefone.replace(/\D/g, "");
 
-if (nome.split(/\s+/).length < 2) {
-    erros.push("Digite nome e sobrenome.");
-}
+    let regexTel = /^\(\d{2}\)\s\d{5}-\d{4}$/;
+    let regexCEP = /^\d{5}-\d{3}$/;
+    let regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-if (!regexTel.test(telefone)) {
-    erros.push("Telefone inválido. Use (00) 00000-0000.");
-}
+    if (nome.split(/\s+/).length < 2) {
+        erros.push("Digite nome e sobrenome.");
+    }
 
-if (!regexCEP.test(cep)) {
-    erros.push("CEP inválido. Use 00000-000.");
-}
+    if (!regexTel.test(telefone)) {
+        erros.push("Telefone inválido. Use (00) 00000-0000.");
+    }
 
-if (!regexEmail.test(email)) {
-    erros.push("E-mail inválido.");
-}
+    if (!regexCEP.test(cep)) {
+        erros.push("CEP inválido. Use 00000-000.");
+    }
 
-if (senha.length < 6) {
-    erros.push("A senha deve ter no mínimo 6 caracteres.");
-}
+    if (!regexEmail.test(email)) {
+        erros.push("E-mail inválido.");
+    }
 
-if (senha !== confirmarSenha) {
-    erros.push("As senhas não coincidem.");
-}
+    if (senha.length < 6) {
+        erros.push("A senha deve ter no mínimo 6 caracteres.");
+    }
+
+    if (senha !== confirmarSenha) {
+        erros.push("As senhas não coincidem.");
+    }
 
     if (erros.length > 0) {
         erroDiv.innerHTML = erros.join("<br>");
@@ -59,7 +61,8 @@ if (senha !== confirmarSenha) {
     const dados = {
         name: nome,
         email: email,
-        phone: phone
+        phone: phone,
+        password: senha
     };
 
     try {
@@ -85,9 +88,11 @@ if (senha !== confirmarSenha) {
             resultado.data?.gift ||
             resultado.prize ||
             resultado.data?.prize ||
+            resultado.brinde ||
+            resultado.data?.brinde ||
             "prêmio não informado";
 
-        sucessoDiv.innerHTML = `Parabéns ${nome}, você realizou seu cadastro com o email ${email}. Entraremos em contato através do seu telefone ${phone}. Você ganhou este prêmio ${gift}.`;
+        sucessoDiv.innerHTML = `Parabéns ${nome}, você realizou seu cadastro com o email ${email}. Entraremos em contato através do seu telefone ${telefone}. Você ganhou este prêmio ${gift}.`;
         sucessoDiv.style.display = "block";
 
         form.reset();
