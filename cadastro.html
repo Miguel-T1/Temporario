@@ -1,70 +1,95 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>Site Uhul</title>
-   <link rel="stylesheet" href="style.css">
- 
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <h1>Cadastro</h1>
-    </header>
-	
-		<nav>
-	<ul>
-	  <a href="index.html">Página inicial</a>
-      <a href="sobre.html">Sobre</a>
-	<a href="contatos.html">Contatos</a>
-	<a href="links.html">Links</a>
-    <a href = "cadastro.html"> Cadastro</a>
-	</ul>
-	</nav>
-      <h1 class = textomenor>
-        Inscreva-se neste site:
-    </h1>
-<form class="formulario" id="formCadastro">
-<div id="erros" class="mensagem erro" style="display: none;"></div>
-<div id="resultado" class="mensagem sucesso" style="display: none;"></div>
+  <header>
+    <h1>Cadastro</h1>
+  </header>
 
-    <div class="campo">
-        <label>Nome e Sobrenome:</label>
-        <input type="text" id="nome">
-    </div>
+  <main>
+    <h2>Inscreva-se neste site</h2>
 
-    <div class="campo">
-        <label>Telefone:</label>
-        <input type="tel" id="telefone">
-    </div>
+    <form class="formulario" id="formCadastro" novalidate>
+      <div id="erros" class="mensagem erro" style="display:none;"></div>
+      <div id="resultado" class="mensagem sucesso" style="display:none;"></div>
 
-    <div class="campo">
-        <label>CEP:</label>
-        <input type="text" id="CEP">
-    </div>
+      <div class="campo">
+        <label for="nome">Nome e Sobrenome</label>
+        <input
+          type="text"
+          id="nome"
+          name="nome"
+          placeholder="Digite nome e sobrenome"
+          autocomplete="name"
+        >
+      </div>
 
-    <div class="campo">
-        <label>E-mail:</label>
-        <input type="email" id="mail">
-    </div>
+      <div class="campo">
+        <label for="telefone">Telefone</label>
+        <input
+          type="tel"
+          id="telefone"
+          name="telefone"
+          placeholder="11912345678"
+          inputmode="numeric"
+          autocomplete="tel"
+        >
+      </div>
 
-    <div class="campo">
-        <label>Senha:</label>
-        <input type="password" id="senha">
-    </div>
+      <div class="campo">
+        <label for="CEP">CEP</label>
+        <input
+          type="text"
+          id="CEP"
+          name="cep"
+          placeholder="00000-000"
+          inputmode="numeric"
+          autocomplete="postal-code"
+        >
+      </div>
 
-    <div class="campo">
-        <label>Confirmar senha:</label>
-        <input type="password" id="confirmarSenha">
-    </div>
+      <div class="campo">
+        <label for="mail">E-mail</label>
+        <input
+          type="email"
+          id="mail"
+          name="email"
+          placeholder="voce@exemplo.com"
+          autocomplete="email"
+        >
+      </div>
 
-    <input type="submit" value="Enviar">
-</form>
-<script src="script.js"></script>
+      <div class="campo">
+        <label for="senha">Senha</label>
+        <input
+          type="password"
+          id="senha"
+          name="senha"
+          placeholder="mínimo 6 caracteres"
+          autocomplete="new-password"
+        >
+      </div>
 
+      <div class="campo">
+        <label for="confirmarSenha">Confirmar senha</label>
+        <input
+          type="password"
+          id="confirmarSenha"
+          name="confirmarSenha"
+          placeholder="repita a senha"
+          autocomplete="new-password"
+        >
+      </div>
 
+      <input type="submit" value="Enviar">
+    </form>
+  </main>
 
-    </body>
-
-
+  <script src="script.js"></script>
+</body>
 </html>
