@@ -1,95 +1,68 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cadastro</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>Cadastro</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
+
+<header>
     <h1>Cadastro</h1>
-  </header>
+</header>
 
-  <main>
-    <h2>Inscreva-se neste site</h2>
+<nav>
+    <ul>
+        <li><a href="index.html">Página inicial</a></li>
+        <li><a href="sobre.html">Sobre</a></li>
+        <li><a href="contatos.html">Contatos</a></li>
+        <li><a href="links.html">Links</a></li>
+        <li><a href="cadastro.html">Cadastro</a></li>
+    </ul>
+</nav>
 
-    <form class="formulario" id="formCadastro" novalidate>
-      <div id="erros" class="mensagem erro" style="display:none;"></div>
-      <div id="resultado" class="mensagem sucesso" style="display:none;"></div>
+<h1 class="textomenor">Inscreva-se neste site:</h1>
 
-      <div class="campo">
-        <label for="nome">Nome e Sobrenome</label>
-        <input
-          type="text"
-          id="nome"
-          name="nome"
-          placeholder="Digite nome e sobrenome"
-          autocomplete="name"
-        >
-      </div>
+<form class="formulario" id="formCadastro" onsubmit="enviarForm(event)">
 
-      <div class="campo">
-        <label for="telefone">Telefone</label>
-        <input
-          type="tel"
-          id="telefone"
-          name="telefone"
-          placeholder="11912345678"
-          inputmode="numeric"
-          autocomplete="tel"
-        >
-      </div>
+    <div id="mensagemErro" class="mensagem erro" style="display: none;"></div>
+    <div id="mensagemSucesso" class="mensagem sucesso" style="display: none;"></div>
 
-      <div class="campo">
-        <label for="CEP">CEP</label>
-        <input
-          type="text"
-          id="CEP"
-          name="cep"
-          placeholder="00000-000"
-          inputmode="numeric"
-          autocomplete="postal-code"
-        >
-      </div>
+    <div class="campo">
+        <label for="nome">Nome e Sobrenome:</label>
+        <input type="text" id="nome" name="name" placeholder="Digite seu nome completo">
+    </div>
 
-      <div class="campo">
-        <label for="mail">E-mail</label>
-        <input
-          type="email"
-          id="mail"
-          name="email"
-          placeholder="voce@exemplo.com"
-          autocomplete="email"
-        >
-      </div>
+    <div class="campo">
+        <label for="telefone">Telefone:</label>
+        <input type="tel" id="telefone" name="phone" placeholder="00 00000-0000">
+    </div>
 
-      <div class="campo">
-        <label for="senha">Senha</label>
-        <input
-          type="password"
-          id="senha"
-          name="senha"
-          placeholder="mínimo 6 caracteres"
-          autocomplete="new-password"
-        >
-      </div>
+    <div class="campo">
+        <label for="CEP">CEP:</label>
+        <input type="text" id="CEP" name="cep" placeholder="00000-000">
+    </div>
 
-      <div class="campo">
-        <label for="confirmarSenha">Confirmar senha</label>
-        <input
-          type="password"
-          id="confirmarSenha"
-          name="confirmarSenha"
-          placeholder="repita a senha"
-          autocomplete="new-password"
-        >
-      </div>
+    <div class="campo">
+        <label for="mail">E-mail:</label>
+        <input type="email" id="mail" name="email" placeholder="email@exemplo.com">
+    </div>
 
-      <input type="submit" value="Enviar">
-    </form>
-  </main>
+    <div class="campo">
+        <label for="senha">Senha:</label>
+        <input type="password" id="senha" name="senha" placeholder="Mínimo 6 caracteres">
+    </div>
 
-  <script src="script.js"></script>
+    <div class="campo">
+        <label for="confirmarSenha">Confirmar senha:</label>
+        <input type="password" id="confirmarSenha" name="senhaAlt" placeholder="Repita a senha">
+    </div>
+
+    <button type="submit">Cadastrar</button>
+
+</form>
+
+<script src="script.js"></script>
+
 </body>
 </html>
