@@ -344,3 +344,59 @@ li a:hover {
         height: 315px;
     }
 }
+.pagina-publicacoes {
+  width: 100%;
+}
+
+.publicacoes-container {
+  width: 90%;
+  max-width: 1000px;
+  margin: 20px auto 30px;
+  padding: 25px;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.publicacao-card {
+  text-align: left;
+  background-color: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.publicacao-card h3 {
+  margin-bottom: 10px;
+}
+
+.publicacao-card p {
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.foto-autor {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  margin-bottom: 12px;
+}
+
+.mensagem {
+  width: 90%;
+  max-width: 1000px;
+  margin: 20px auto;
+  padding: 15px;
+  text-align: center;
+  border-radius: 8px;
+}
+
+.mensagem.info {
+  background-color: #eef3ff;
+}
+
+.mensagem.erro {
+  background-color: #ffe5e5;
+  color: #b00020;
+}
