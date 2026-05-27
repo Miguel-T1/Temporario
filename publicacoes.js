@@ -1,4 +1,4 @@
-const API_PUBLICACOES = "https://backend-posts.onrender.com/posts";
+const API_PUBLICACOES = "https://backend-posts-obfy.onrender.com/posts";
 
 const container = document.getElementById("publicacoesContainer");
 const mensagem = document.getElementById("mensagemPublicacoes");
