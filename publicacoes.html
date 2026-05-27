@@ -4,39 +4,43 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Publicações</title>
-
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<header>
-  <h1>Publicações</h1>
-</header>
+  <header>
+    <h1>Publicações</h1>
+    <p>Confira as publicações carregadas pela API</p>
+  </header>
 
-<nav>
-  <a href="index.html">Página inicial</a>
-  <a href="sobre.html">Sobre</a>
-  <a href="contatos.html">Contatos</a>
-  <a href="links.html">Links</a>
-  <a href="cadastro.html">Cadastro</a>
-  <a href="destaques.html">Em destaque</a>
-  <a href="publicacoes.html">Publicações</a>
-</nav>
+  <nav>
+    <a href="index.html">Página inicial</a>
+    <a href="sobre.html">Sobre</a>
+    <a href="contatos.html">Contatos</a>
+    <a href="links.html">Links</a>
+    <a href="cadastro.html">Cadastro</a>
+    <a href="destaques.html">Em destaque</a>
+    <a href="publicacoes.html">Publicações</a>
+  </nav>
 
-<main class="pagina-publicacoes">
-  <h2 class="titulo-destaques">Lista de publicações</h2>
+  <main class="pagina-publicacoes">
 
-  <div id="mensagemPublicacoes" class="mensagem info">
-    Carregando publicações...
-  </div>
+    <h2 class="titulo-destaques">Lista de Publicações</h2>
 
-  <div id="publicacoesContainer" class="publicacoes-container"></div>
-</main>
+    <div id="mensagemPublicacoes" class="mensagem info">
+      Carregando publicações...
+    </div>
 
-<script src="publicacoes.js"></script>
+    <section id="publicacoesContainer" class="publicacoes-container">
+      <!-- Os cards das publicações serão carregados aqui pelo publicacoes.js -->
+    </section>
+
+  </main>
+
+  <script src="publicacoes.js"></script>
 
 </body>
+
 </html>
