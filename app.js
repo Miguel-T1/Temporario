@@ -8,6 +8,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+/* IMPORTA ROTA DE LOGIN */
+const authRoutes = require('./routes/auth');
+app.use(authRoutes);
+
+/* IMPORTA MIDDLEWARE */
+const verifyToken = require('./middlewares/verifyToken');
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
